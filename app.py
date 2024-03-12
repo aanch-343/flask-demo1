@@ -33,7 +33,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-@app.route('/receive-image', methods=['POST','GET'])
+@app.route('/receive-image', methods=['GET'])
 def receive_image():
     try:
         # Receive data from the request
@@ -53,7 +53,7 @@ def receive_image():
         return jsonify({"message": "Data received successfully"}), 200
     except Exception as e:
         print("Error receiving data:", str(e))
-        return jsonify({"error": "Error receiving data"}), 500
+        return jsonify({"error": "Error receiving fghjdsfghjsdfghjkldata"}), 500
 
 if __name__ == '_main_':
     app.run(debug=True)
