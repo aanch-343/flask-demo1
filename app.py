@@ -4,7 +4,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-@app.route('/receive-image')
+@app.route('/receive-image',methods=['POST'])
 def receive_image():
     try:
         # Receive data from the request
