@@ -8,14 +8,14 @@ CORS(app)  # Enable CORS for all routes
 def receive_image():
     try:
         # Receive data from the request
-        image_buffer = request.get_data()
-        image_name = request.form['imageName']
+        # image_buffer = request.get_data()
+        # image_name = request.form['imageName']
         question = request.form['question']
         answer_key = request.form['answerkey']
 
         # Log received data
-        print("Received Image Buffer:", image_buffer)
-        print("Image Name:", image_name)
+        # print("Received Image Buffer:", image_buffer)
+        # print("Image Name:", image_name)
         print("Question:", question)
         print("Answer Key:", answer_key)
 
