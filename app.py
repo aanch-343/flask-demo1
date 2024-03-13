@@ -32,6 +32,7 @@
 from flask import Flask, request, jsonify
 from PIL import Image
 import io
+import base64
 
 app = Flask(__name__)
 
@@ -43,14 +44,17 @@ def receive_image():
             # Extract JSON data from request
             request_data = request.json
             
-            # Extract image buffer, image name, question, and answer key from request JSON
-            image_buffer = request_data['image']
-            image_name = request_data['imageName']
-            question = request_data['question']
-            answer_key = request_data['answerkey']
+            # Extract image data, image name, question, and answer key from request JSON
+            image_data_base64 = request_data.get('image')
+            image_name = request_data.get('imageName')
+            question = request_data.get('question')
+            answer_key = request_data.get('answerkey')
 
-            # Convert image buffer to bytes
-            image_bytes = bytes(image_buffer)
+            if not all([image_data_base64, image_name, question, answer_key]):
+                return jsonify(error="Missing required fields"), 400
+
+            # Decode base64-encoded image data
+            image_bytes = base64.b64decode(image_data_base64.encode('utf-8'))
 
             # Open image using PIL
             image = Image.open(io.BytesIO(image_bytes))
