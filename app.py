@@ -36,7 +36,7 @@ import base64
 import pytesseract
 
 # Set the path to the Tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
