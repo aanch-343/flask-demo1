@@ -42,7 +42,6 @@ def process_image(image_data):
 
     # Preprocessing:
     gray = image.convert('L')  # Convert to grayscale
-    # You might want to experiment with different thresholding methods
     thresh = gray.point(lambda x: 0 if x < 128 else 255, '1')  # Thresholding
 
     # Perform OCR on the preprocessed image
@@ -54,7 +53,7 @@ def process_image(image_data):
 def receive_image():
     try:
         # Extract image buffer, image name, question, and answer key from request body
-        image_data = request.json['image']
+        image_data = request.get_data()
         image_name = request.json['imageName']
         question = request.json['question']
         answer_key = request.json['answerkey']
@@ -66,7 +65,7 @@ def receive_image():
         print("Image:", image_name)
         print("Question:", question)
         print("Answer Key:", answer_key)
-        print("Image Buffer:", image_data)
+        print("Image Buffer Size:", len(image_data))
         print("Extracted Text:", extracted_text)
 
         # Return a response acknowledging the receipt of data along with the question, answer key, and extracted text
@@ -77,4 +76,3 @@ def receive_image():
 
 if __name__ == '__main__':
     app.run(debug=True)  # Run the Flask app
-
