@@ -33,8 +33,23 @@ import base64
 import io
 import pytesseract
 from PIL import Image
+import cv2
 
 app = Flask(__name__)
+
+def image_to_text(image_file):
+    img = cv2.imread(image_file)
+
+    # Preprocessing:
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+    thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]  # Thresholding
+
+    # Optional deskewing (if needed):
+    # deskewed = deskew(thresh)
+
+    text = pytesseract.image_to_string(thresh, lang='eng', config='--psm 6')  # Use the preprocessed image
+
+    return text
 
 @app.route('/receive-image', methods=['POST'])
 def receive_image():
@@ -59,14 +74,21 @@ def receive_image():
             # Convert image buffer to PIL Image
             image = Image.open(io.BytesIO(image_bytes))
 
+            # Save the image to a temporary file
+            temp_image_path = 'temp_image.png'
+            image.save(temp_image_path)
+
             # Perform OCR on the image
-            ocr_text = pytesseract.image_to_string(image)
+            ocr_text = image_to_text(temp_image_path)
 
             # Log the received data and OCR text
             print("Image:", image_name)
             print("Question:", question)
             print("Answer Key:", answer_key)
             print("OCR Text:", ocr_text)
+
+            # Delete the temporary image file
+            os.remove(temp_image_path)
 
             # Return the OCR text as a response
             return jsonify(message="OCR completed", ocr_text=ocr_text), 200
@@ -78,5 +100,3 @@ def receive_image():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
