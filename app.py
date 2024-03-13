@@ -29,10 +29,9 @@
 # if __name__ == '_main_':
 #     app.run(debug=True)  # Run the Flask app
 from flask import Flask, request, jsonify
-from PIL import Image
-import io
 import base64
 import os
+import shutil
 
 app = Flask(__name__)
 
@@ -56,15 +55,15 @@ def receive_image():
             # Decode base64-encoded image data
             image_bytes = base64.b64decode(image_data_base64.encode('utf-8'))
 
-            # Open image using PIL
-            image = Image.open(io.BytesIO(image_bytes))
-
             # Get the directory where this script is located
             script_dir = os.path.dirname(__file__)
 
             # Save the image in the same directory as this script
             image_path = os.path.join(script_dir, image_name + '.jpg')
-            image.save(image_path)
+
+            # Open a new file and write the image data to it
+            with open(image_path, 'wb') as f:
+                f.write(image_bytes)
 
             # Log the received data
             print("Image:", image_name)
@@ -81,3 +80,4 @@ def receive_image():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
