@@ -70,16 +70,11 @@ def receive_image():
         print("Extracted Text:", extracted_text)
 
         # Return a response acknowledging the receipt of data along with the question, answer key, and extracted text
-        response_data = {
-            "message": "Data received and logged",
-            "question": question,
-            "answer_key": answer_key,
-            "extracted_text": extracted_text
-        }
-        return jsonify(response_data), 200
+        return jsonify(message="Data received and logged", question=question, answer_key=answer_key, extracted_text=extracted_text), 200
     except Exception as e:
         print("Error receiving or processing data:", str(e))
         return jsonify(error="Error receiving or processing data"), 500
 
 if __name__ == '__main__':
     app.run(debug=True)  # Run the Flask app
+
