@@ -32,8 +32,6 @@
 from flask import Flask, request, jsonify
 from PIL import Image
 import io
-import base64
-import os
 
 app = Flask(__name__)
 
@@ -45,32 +43,23 @@ def receive_image():
             # Extract JSON data from request
             request_data = request.json
             
-            # Extract image data, image name, question, and answer key from request JSON
-            image_data_base64 = request_data['image']
+            # Extract image buffer, image name, question, and answer key from request JSON
+            image_buffer = request_data['image']
             image_name = request_data['imageName']
             question = request_data['question']
             answer_key = request_data['answerkey']
 
-            # Decode base64-encoded image data
-            image_data = base64.b64decode(image_data_base64)
+            # Convert image buffer to bytes
+            image_bytes = bytes(image_buffer)
 
             # Open image using PIL
-            image = Image.open(io.BytesIO(image_data))
+            image = Image.open(io.BytesIO(image_bytes))
 
-            # Get the directory path of the current script
-            script_directory = os.path.dirname(__file__)
-
-            # Create a directory named 'images' within the script directory if it doesn't exist
-            images_directory = os.path.join(script_directory, 'images')
-            if not os.path.exists(images_directory):
-                os.makedirs(images_directory)
-
-            # Save the image in the 'images' directory
-            image_path = os.path.join(images_directory, image_name + '.jpg')
-            image.save(image_path)
+            # Save the image as JPEG file
+            image.save(image_name + '.jpg')
 
             # Log the received data
-            print("Image saved at:", image_path)
+            print("Image:", image_name)
             print("Question:", question)
             print("Answer Key:", answer_key)
 
