@@ -27,36 +27,14 @@
 
 # if __name__ == '_main_':
 #     app.run(debug=True)  # Run the Flask app
+# main.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from pytesseract import image_to_string
-from PIL import Image
-import io
+from ocr import process_image
 import base64
-import pytesseract
-
-# Set the path to the Tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR'
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
-
-def process_image(image_data):
-    try:
-        # Convert base64 encoded image data to PIL Image object
-        image = Image.open(io.BytesIO(image_data))
-
-        # Preprocessing:
-        gray = image.convert('L')  # Convert to grayscale
-        thresh = gray.point(lambda x: 0 if x < 128 else 255, '1')  # Thresholding
-
-        # Perform OCR on the preprocessed image
-        text = image_to_string(thresh, lang='eng', config='--psm 6')
-
-        return text
-    except Exception as e:
-        print("Error processing image:", str(e))
-        return ""
 
 @app.route('/receive-image', methods=['POST'])
 def receive_image():
