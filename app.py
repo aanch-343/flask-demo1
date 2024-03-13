@@ -33,8 +33,12 @@ from flask import Flask, request, jsonify
 from PIL import Image
 import io
 import base64
+import os
 
 app = Flask(__name__)
+
+# Specify the directory where images will be saved (relative path)
+SAVE_DIR = 'images/'
 
 @app.route('/receive-image', methods=['POST'])
 def receive_image():
@@ -59,8 +63,9 @@ def receive_image():
             # Open image using PIL
             image = Image.open(io.BytesIO(image_bytes))
 
-            # Save the image as JPEG file
-            image.save(image_name + '.jpg')
+            # Save the image with the specified file path
+            image_path = os.path.join(SAVE_DIR, image_name + '.jpg')
+            image.save(image_path)
 
             # Log the received data
             print("Image:", image_name)
@@ -77,3 +82,4 @@ def receive_image():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
