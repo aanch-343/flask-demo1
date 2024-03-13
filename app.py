@@ -30,8 +30,9 @@
 #     app.run(debug=True)  # Run the Flask app
 from flask import Flask, request, jsonify
 import base64
-import os
-import shutil
+import io
+import pytesseract
+from PIL import Image
 
 app = Flask(__name__)
 
@@ -55,29 +56,27 @@ def receive_image():
             # Decode base64-encoded image data
             image_bytes = base64.b64decode(image_data_base64.encode('utf-8'))
 
-            # Get the directory where this script is located
-            script_dir = os.path.dirname(__file__)
+            # Convert image buffer to PIL Image
+            image = Image.open(io.BytesIO(image_bytes))
 
-            # Save the image in the same directory as this script
-            image_path = os.path.join(script_dir, image_name + '.jpg')
+            # Perform OCR on the image
+            ocr_text = pytesseract.image_to_string(image)
 
-            # Open a new file and write the image data to it
-            with open(image_path, 'wb') as f:
-                f.write(image_bytes)
-
-            # Log the received data
+            # Log the received data and OCR text
             print("Image:", image_name)
             print("Question:", question)
             print("Answer Key:", answer_key)
+            print("OCR Text:", ocr_text)
 
-            # Return a response acknowledging the receipt of data
-            return jsonify(message="Data received and logged"), 200
+            # Return the OCR text as a response
+            return jsonify(message="OCR completed", ocr_text=ocr_text), 200
         else:
             return jsonify(error="Request data is not in JSON format"), 400
     except Exception as e:
-        print("Error receiving data:", str(e))
-        return jsonify(error="Error receiving data"), 500
+        print("Error receiving or processing data:", str(e))
+        return jsonify(error="Error receiving or processing data"), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
