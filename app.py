@@ -48,8 +48,8 @@ def receive_image():
         print("Answer Key:", answer_key)
         print("Image Buffer:", image_data)
 
-        print("Data received and logged successfully")
-        return jsonify(message="Data received and logged"), 200
+        # Return a response acknowledging the receipt of data along with the question and answer key
+        return jsonify(message="Data received and logged", question=question, answer_key=answer_key), 200
     except Exception as e:
         print("Error receiving data:", str(e))
         return jsonify(error="Error receiving data"), 500
