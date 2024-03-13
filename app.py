@@ -28,6 +28,7 @@
 # if __name__ == '_main_':
 #     app.run(debug=True)  # Run the Flask app
 # main.py
+# app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from ocr import process_image
@@ -45,8 +46,8 @@ def receive_image():
         question = request.json['question']
         answer_key = request.json['answerkey']
 
-        # Process the received image to extract text
-        extracted_text = process_image(image_data)
+        # Process the received image to extract text and obtain the processed image
+        extracted_text, processed_image = process_image(image_data)
 
         # Log the received data and extracted text
         print("Image:", image_name)
@@ -55,8 +56,14 @@ def receive_image():
         print("Image Buffer Size:", len(image_data))
         print("Extracted Text:", extracted_text)
 
-        # Return a response acknowledging the receipt of data along with the question, answer key, and extracted text
-        return jsonify(message="Data received and logged", question=question, answer_key=answer_key, extracted_text=extracted_text), 200
+        # Return a response including the extracted text and the processed image
+        return jsonify(
+            message="Data received and processed",
+            question=question,
+            answer_key=answer_key,
+            extracted_text=extracted_text,
+            processed_image=base64.b64encode(processed_image.getvalue()).decode('utf-8')
+        ), 200
     except Exception as e:
         print("Error receiving or processing data:", str(e))
         return jsonify(error="Error receiving or processing data"), 500
