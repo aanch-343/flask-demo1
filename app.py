@@ -32,28 +32,33 @@ from flask_cors import CORS
 from pytesseract import image_to_string
 from PIL import Image
 import io
+import base64
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 def process_image(image_data):
-    # Convert base64 encoded image data to PIL Image object
-    image = Image.open(io.BytesIO(image_data))
+    try:
+        # Convert base64 encoded image data to PIL Image object
+        image = Image.open(io.BytesIO(image_data))
 
-    # Preprocessing:
-    gray = image.convert('L')  # Convert to grayscale
-    thresh = gray.point(lambda x: 0 if x < 128 else 255, '1')  # Thresholding
+        # Preprocessing:
+        gray = image.convert('L')  # Convert to grayscale
+        thresh = gray.point(lambda x: 0 if x < 128 else 255, '1')  # Thresholding
 
-    # Perform OCR on the preprocessed image
-    text = image_to_string(thresh, lang='eng', config='--psm 6')
+        # Perform OCR on the preprocessed image
+        text = image_to_string(thresh, lang='eng', config='--psm 6')
 
-    return text
+        return text
+    except Exception as e:
+        print("Error processing image:", str(e))
+        return ""
 
 @app.route('/receive-image', methods=['POST'])
 def receive_image():
     try:
-        # Extract image buffer, image name, question, and answer key from request body
-        image_data = request.get_data()
+        # Extract image data, image name, question, and answer key from request body
+        image_data = base64.b64decode(request.json['image'])
         image_name = request.json['imageName']
         question = request.json['question']
         answer_key = request.json['answerkey']
