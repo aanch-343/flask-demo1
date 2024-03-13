@@ -28,7 +28,6 @@
 
 # if __name__ == '_main_':
 #     app.run(debug=True)  # Run the Flask app
-
 from flask import Flask, request, jsonify
 from PIL import Image
 import io
@@ -37,7 +36,7 @@ import os
 
 app = Flask(__name__)
 
-# Specify the directory where images will be saved (relative path)
+# Specify the directory where images will be saved
 SAVE_DIR = 'images/'
 
 @app.route('/receive-image', methods=['POST'])
@@ -57,13 +56,16 @@ def receive_image():
             if not all([image_data_base64, image_name, question, answer_key]):
                 return jsonify(error="Missing required fields"), 400
 
+            # Create the directory if it doesn't exist
+            os.makedirs(SAVE_DIR, exist_ok=True)
+
             # Decode base64-encoded image data
             image_bytes = base64.b64decode(image_data_base64.encode('utf-8'))
 
             # Open image using PIL
             image = Image.open(io.BytesIO(image_bytes))
 
-            # Save the image with the specified file path
+            # Save the image with an absolute path
             image_path = os.path.join(SAVE_DIR, image_name + '.jpg')
             image.save(image_path)
 
@@ -82,4 +84,3 @@ def receive_image():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
